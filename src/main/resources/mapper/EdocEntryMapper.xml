@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jb.dao.EdocEntryMapper">
+    <!--查询总页数-->
+   <!-- <select id="selectCount" resultType="int">
+		select count(*) from `edoc_entry`
+	</select>-->
+    <!--分页查询-->
+    <!--<select id="getAllEdocEntry" resultType="edocEntry">
+        select id,title,summary,uploaduser,createdate
+        from `edoc_entry`
+        order by id DESC
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+
+
+    </select>-->
+    <select id="getAllEdocEntry" resultType="EdocEntry">
+        select * from edoc_entry
+        order by id DESC
+    </select>
+
+    <!--增加-->
+    <insert id="addEdocEntry" parameterType="EdocEntry">
+        INSERT INTO edoc_entry
+        (title, summary, uploaduser, createdate)
+        VALUES
+        (#{title},#{summary},#{uploaduser},#{createdate});
+    </insert>
+    <!--修改-->
+    <update id="modifyEdocEntry" parameterType="EdocEntry">
+        update edoc_entry
+        set
+        `title` = #{title},
+        `summary` = #{summary},
+        `uploaduser` = #{uploaduser},
+        `createdate` = #{createdate}
+        where id=#{id}
+    </update>
+    <!--根据id删除一条电子文档信息-->
+    <delete id="deleteEdocEntryById" parameterType="int">
+        delete from edoc_entry where id=#{id}
+    </delete>
+    <!--根据区域查询出电子文档信息-->
+    <select id="getEdocEntryByCategory" parameterType="Integer" resultType="EdocEntry">
+        select * from edoc_entry
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                categoryId=#{categoryId}
+            </if>
+        </where>
+        order by id DESC
+
+    </select>
+    <!--根据id查询出一条电子文档信息-->
+    <select id="getEdocEntryById" parameterType="int" resultType="EdocEntry">
+        select * from edoc_entry
+        where id=#{id}
+    </select>
+
+    <!--分页查询-->
+    <select id="getgetAllEdocEntryByPage" resultType="EdocEntry">
+        select * from edoc_entry
+        order by id DESC
+        limit ${start},${pageSize}
+    </select>
+</mapper>

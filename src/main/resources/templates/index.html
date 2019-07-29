@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            width: 1000px;
+            border: 0;
+            margin: 100px auto 0;
+            text-align: center;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table th {
+            background: #0090D7;
+            font-weight: normal;
+            line-height: 30px;
+            font-size: 14px;
+            color: #FFF;
+        }
+
+        table tr:nth-child(odd) {
+            background: #F4F4F4;
+        }
+
+        table td:nth-child(even) {
+            color: #C00;
+        }
+
+        /*        table tr:nth-child(5) {
+                    background: #73B1E0;
+                    color: #FFF;
+                }*/
+
+        table tr:hover {
+            background: #73B1E0;
+            color: #FFF;
+        }
+
+        table td, table th {
+            border: 1px solid #EEE;
+        }
+
+        .main {
+            /*border: blue solid 5px;*/
+            text-align: center; /*让div内部文字居中*/
+            background-color: #fff;
+            border-radius: 20px;
+            width: 1100px;
+            height: 700px;
+            margin: 0 auto;
+            margin-top:20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        td, th {
+            width: 150px;
+            border: blue solid 2px;
+        }
+
+        .styleDiv {
+            text-align: center;
+            background: #CC0000;
+            margin: 0 auto;
+        }
+
+    </style>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+    <script>
+
+        //获取下拉列表中的区域
+        $(document).ready(function () {
+            //设定鼠标为小手的样式
+            style();
+            //加载显示所有的信息
+            firstOpent();
+            //跳转update
+            update();
+            //跳转删除
+            deletea();
+            $.ajax({
+                url: "edoc/getAllEdocCategory",
+                type: "POST",
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("#district").append("<option value="+(i+1)+">" + data[i].name + "</option>");
+                    }
+                }
+            })
+        });
+        //查询出所有记录
+        function firstOpent(){
+            $.ajax({
+                /*url: "edoc/getAllEdocEntry",*/
+                url: "edoc/getAllEdocEntryByPage",
+                type: "POST",
+                data: {"currentPage":1},
+                dataType: "json",
+
+                /*a.id,d.name,a.monitorTime,a.pm10,a.pm25,a.monitoringStation*/
+                success: function (data) {
+                    var tr = "";
+
+                    $.each(data, function (i, v) {
+                        var id = v.id;
+                        var title = v.title;
+                        var summary = v.summary;
+                        var uploaduser = v.uploaduser;
+                        var createdate = v.createdate;
+
+                        tr += "<tr class=\".clear\"><td>" + id + "</td><td>" + title + "</td><td>" + summary + "</td><td>" + uploaduser + "</td><td>" + createdate +"</td>" +
+                            "<td><a class='update' style='cursor:pointer'>修改</a>&nbsp;&nbsp;||&nbsp;&nbsp;<a class='delete' id='delete' style='cursor:pointer'>删除</a></td><input type='hidden' value="+id+"></tr>"
+
+                    })
+
+
+                    /*添加列表*/
+                    $("#show").append(tr);
+                    $("#show tr:odd").css("background-color","green");
+                    $("#show tr:even:gt(1)").css("background-color","");
+
+                }
+            })
+
+        }
+        //设定鼠标为小手的样式
+        function style(){
+            $("#pname").on("mouseover", function () {
+                $(this).css("cursor", "pointer");
+            });
+        }
+        function deletea(){
+            $(".main").on("click",".delete",function(){
+                var id=$(this).parents('tr').find("input").val();
+                alert("id的值为"+id)
+                if (id == '' || id == undefined) {
+                    alert("没有找到产品的id");
+                    return;
+                }
+                window.location.href = "edoc/delete?id=" + id;
+            })
+
+        }
+        /*下拉列表查询*/
+        function search() {
+            var checkValue=$("#district").val();
+            alert("checkvalue的值为"+checkValue);
+            $.ajax({
+                url: "edoc/getEdocEntryByCategory",
+                type: "POST",
+                data: {"categoryId":checkValue},
+                dataType: "json",
+
+                /*a.id,d.name,a.monitorTime,a.pm10,a.pm25,a.monitoringStation*/
+                success: function (data) {
+                    var tr = "";
+                    if(null!=data&&data!=""){
+                        $.each(data, function (i, v) {
+                            var id = v.id;
+                            var title = v.title;
+                            var summary = v.summary;
+                            var uploaduser = v.uploaduser;
+                            var createdate = v.createdate;
+
+                            tr += "<tr class=\".clear\"><td>" + id + "</td><td>" + title + "</td><td>" + summary + "</td><td>" + uploaduser + "</td><td>" + createdate + "</td>" +
+                                "<td><a class='update' style='cursor:pointer'>修改</a>&nbsp;&nbsp;||&nbsp;&nbsp;<a class='delete' id='delete' style='cursor:pointer'>删除</a></td><input type='hidden' value="+id+"></tr>"
+                        })
+                    }else{
+                        tr+="<tr class=\".clear\"><td colspan='6'>"+"抱歉，暂无数据！"+"</td></tr>"
+                    }
+                    /*添加列表*/
+                    $("#show tr:gt(2)").empty("");
+                    $("#show").append(tr);
+                }
+
+            })
+        }
+        //跳转修改页面
+        function update(){
+            $(".main").on("click", ".update", function () {
+                var id = $(this).parents('tr').find("input").val();
+                if (id == '' || id == undefined) {
+                    alert("没有找到产品的id");
+                    return;
+                }
+                window.location.href = "edoc/update?id=" + id;
+            })
+        }
+    </script>
+</head>
+<body CLASS="main">
+
+<table id="show">
+    <div></div>
+    <tr>
+        <span>文档分类：</span>
+        &nbsp;
+        <select id="district">
+            <option value="">全部</option>
+        </select>
+        &nbsp;
+        <input type="button" value="查询" id="pname" onclick="search()"/>
+        &nbsp;
+        <a href="edoc/addPage" id="add">新增电子文档</a>
+    </tr>
+    <tr>
+        <h2 >电子文档列表</h2>
+    </tr>
+    <tr style="background:grey;">
+        <td>文档编号</td>
+        <td>文档名称</td>
+        <td>文档摘要</td>
+        <td>上传人</td>
+        <td>上传时间</td>
+        <td>操作</td>
+    </tr>
+</table>
+
+<style>
+    .pagination li {
+        float:left; /* 往左浮动 */
+        list-style-type:none;
+        margin-right:10px;
+    }
+    .pagination{
+        margin-left:400px;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-5">
+        <!--共${totalCount}条记录
+        ${currentPageNo }/${totalPageCount }页-->
+
+    </div>
+    <div class="col-sm-7">
+
+        <ul class="pagination">
+
+            <li class="edoc_button previous"><a
+                    href="javascript:page_nav(document.forms[0],1);"
+                    >首页</a>
+            </li>
+            <li class="edoc_button "><a
+                    href="javascript:page_nav(document.forms[0],[[${currentPageNo-1}]]);"
+                >上一页</a>
+            </li>
+
+            <li class="edoc_button "><a
+                    href="edoc/getAllEdocEntryByPage?currentPage=2"
+                    >下一页</a>
+            </li>
+            <li class="edoc_button next"><a
+                    href=";"
+                    >末页</a>
+            </li>
+            <li>第1页/共1页</li>
+
+        </ul>
+
+    </div>
+</div>
+
+</div>
+</body>
+</html>

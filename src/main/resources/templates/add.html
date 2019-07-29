@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset=UTF-8>
+    <title>Title</title>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/add.js"></script>
+</head>
+
+<body>
+<form action="saveAdd" method="post" id="form1" onsubmit="return checkAll()">
+    <table align="center" border="1">
+        <caption style="background: greenyellow"><h2>增加电子文档</h2></caption>
+        <tr>
+            <td style='width:30%'><label>文档名称:<span style='color:red'>(*)</span></label></td>
+            <td><input type='text' name='title' id='title'/></td>
+        </tr>
+        <tr>
+            <td style='width:30%'><label>文档摘要</label></td>
+            <td><textarea rows="3" cols="10" name='summary'></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style='width:30%'><label>上传人</label></td>
+            <td><input type='text' name='uploaduser'/></td>
+        </tr>
+        <tr>
+            <td style='width:30%'><label>上传时间(*)</label></td>
+            <td><input type='date' name='createdate' id='createdate'/><span>（yyyy-MM-dd）</span></td>
+        </tr>
+
+
+        <tr>
+            <td colspan='2' align="center">
+                <input type="submit" value="提交">
+                <input type="button" onclick=window.location.href='javascript:history.go(-1)' value="返回">
+            </td>
+        </tr>
+    </table>
+</form>
+
+</body>
+</html>
